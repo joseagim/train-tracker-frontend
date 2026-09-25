@@ -1,3 +1,5 @@
+import { DEFAULT_LANGUAGE, translations } from '../i18n/translations'
+
 // En desarrollo usamos rutas relativas para que las sirva el proxy de Vite
 // (ver vite.config.js): la API no envía cabeceras CORS y el navegador
 // bloquearía las respuestas si llamásemos directamente a su dominio.
@@ -12,6 +14,19 @@ let unauthorizedHandler = null
 
 export function setUnauthorizedHandler(fn) {
   unauthorizedHandler = fn
+}
+
+// Idioma que LanguageProvider mantiene sincronizado, para poder traducir los
+// mensajes de error que genera este módulo (los que sí controlamos: fallos
+// de red, sesión caducada... no los que ya llegan redactados desde la API).
+let currentLanguage = DEFAULT_LANGUAGE
+
+export function setApiLanguage(language) {
+  currentLanguage = language
+}
+
+function apiErrorText(key) {
+  return translations[currentLanguage]?.apiErrors?.[key] ?? translations[DEFAULT_LANGUAGE].apiErrors[key]
 }
 
 /* ---------- Token / usuario en localStorage ---------- */
@@ -58,7 +73,7 @@ async function request(path, { method = 'GET', body, auth = false } = {}) {
     const token = getToken()
     if (!token) {
       if (unauthorizedHandler) unauthorizedHandler()
-      throw new ApiError('Debes iniciar sesión para realizar esta acción.', 401)
+      throw new ApiError(apiErrorText('mustSignIn'), 401)
     }
     headers.Authorization = `Bearer ${token}`
   }
@@ -71,7 +86,7 @@ async function request(path, { method = 'GET', body, auth = false } = {}) {
       body: body !== undefined ? JSON.stringify(body) : undefined,
     })
   } catch {
-    throw new ApiError('No se ha podido conectar con el servidor.', 0)
+    throw new ApiError(apiErrorText('networkError'), 0)
   }
 
   if (res.status === 401 || res.status === 403) {
@@ -95,8 +110,8 @@ async function request(path, { method = 'GET', body, auth = false } = {}) {
     // 401/403 pueden llegar con cuerpo vacío desde el filtro de seguridad.
     const fallback =
       res.status === 401 || res.status === 403
-        ? 'Sesión no válida o caducada. Vuelve a iniciar sesión.'
-        : `Error ${res.status}`
+        ? apiErrorText('sessionExpired')
+        : apiErrorText('genericError').replace('{status}', res.status)
     const message = data?.message || text || fallback
     throw new ApiError(message, res.status)
   }
@@ -146,4 +161,12 @@ export function purchaseTicket({ tripId, origin, destination }) {
 
 export function getMyTickets() {
   return request('/api/tickets/my-tickets', { auth: true })
+}
+
+export function validateTicket(uuid) {
+  return request(`/api/tickets/validate/${encodeURIComponent(uuid)}`, { auth: true })
+}
+
+export function scanTicket(uuid) {
+  return request(`/api/tickets/scan/${encodeURIComponent(uuid)}`, { method: 'POST', auth: true })
 }

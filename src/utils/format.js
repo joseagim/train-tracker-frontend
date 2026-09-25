@@ -1,25 +1,32 @@
-const timeFmt = new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' })
-const dateFmt = new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
-const priceFmt = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' })
+// Locale de formato asociado a cada idioma de la interfaz. El precio se
+// formatea con este locale (separadores, posición del símbolo…) pero la
+// divisa sigue siendo EUR: no convertimos importes, solo su presentación.
+const LOCALES = { es: 'es-ES', en: 'en-GB' }
 
-export function formatTime(iso) {
+function localeFor(language) {
+  return LOCALES[language] ?? LOCALES.es
+}
+
+export function formatTime(iso, language) {
   if (!iso) return '--:--'
-  return timeFmt.format(new Date(iso))
+  return new Intl.DateTimeFormat(localeFor(language), { hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
 }
 
-export function formatDate(iso) {
+export function formatDate(iso, language) {
   if (!iso) return ''
-  return dateFmt.format(new Date(iso))
+  return new Intl.DateTimeFormat(localeFor(language), { day: '2-digit', month: 'short', year: 'numeric' }).format(
+    new Date(iso),
+  )
 }
 
-export function formatDateTime(iso) {
+export function formatDateTime(iso, language) {
   if (!iso) return ''
-  return `${formatDate(iso)} · ${formatTime(iso)}`
+  return `${formatDate(iso, language)} · ${formatTime(iso, language)}`
 }
 
-export function formatPrice(value) {
+export function formatPrice(value, language) {
   if (typeof value !== 'number') return '—'
-  return priceFmt.format(value)
+  return new Intl.NumberFormat(localeFor(language), { style: 'currency', currency: 'EUR' }).format(value)
 }
 
 /** "seats" es un string de '1' (libre) y '0' (ocupado). */
@@ -38,6 +45,12 @@ export function formatDuration(fromIso, toIso) {
   const h = Math.floor(minutes / 60)
   const m = minutes % 60
   return h ? `${h}h ${m ? `${m}min` : ''}`.trim() : `${m}min`
+}
+
+/** Recorta un texto a `maxLength` caracteres añadiendo "…" si se pasa. */
+export function truncate(text, maxLength) {
+  if (!text || text.length <= maxLength) return text
+  return `${text.slice(0, maxLength).trimEnd()}…`
 }
 
 /** Fecha de hoy en formato YYYY-MM-DD (hora local), para el input date. */

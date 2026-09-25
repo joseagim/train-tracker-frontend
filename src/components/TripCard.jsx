@@ -1,8 +1,12 @@
-import { useState } from 'react'
-import { countFreeSeats, formatDuration, formatTime, findStop } from '../utils/format'
+import { useId, useState } from 'react'
+import { useLanguage } from '../context/language-context'
+import TrainLogo from './TrainLogo'
+import { countFreeSeats, formatDuration, formatPrice, formatTime, findStop } from '../utils/format'
 
 export default function TripCard({ trip, origin, destination, passengers, onBuy }) {
+  const { language, t } = useLanguage()
   const [showStops, setShowStops] = useState(false)
+  const stopsId = useId()
 
   const originStop = findStop(trip, origin.name)
   const destinationStop = findStop(trip, destination.name)
@@ -22,64 +26,69 @@ export default function TripCard({ trip, origin, destination, passengers, onBuy 
 
   return (
     <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
-            {trip.train?.type ?? 'Tren'} · Viaje #{trip.id}
+      <div className="flex flex-wrap items-center gap-5">
+        <div className="flex min-w-[150px] flex-col gap-0.5">
+          <TrainLogo trainType={trip.train?.type} />
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+            {trip.train?.type ?? t('common.train')}
           </p>
-
-          <div className="mt-2 flex items-baseline gap-3">
-            <span className="text-2xl font-semibold text-slate-900">{formatTime(departure)}</span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-semibold text-slate-900">{formatTime(departure, language)}</span>
             <span className="text-slate-300">→</span>
-            <span className="text-2xl font-semibold text-slate-900">{formatTime(arrival)}</span>
-            {formatDuration(departure, arrival) && (
-              <span className="text-sm text-slate-500">{formatDuration(departure, arrival)}</span>
-            )}
+            <span className="text-2xl font-semibold text-slate-900">{formatTime(arrival, language)}</span>
           </div>
+          {formatDuration(departure, arrival) && (
+            <span className="text-xs text-slate-500">{formatDuration(departure, arrival)}</span>
+          )}
+        </div>
 
-          <p className="mt-1 text-sm text-slate-600">
+        <div className="hidden w-px self-stretch bg-slate-100 sm:block" aria-hidden="true" />
+
+        <div className="min-w-[200px] flex-1">
+          <p className="text-sm text-slate-600">
             {origin.name} → {destination.name}
           </p>
-
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-0.5 text-sm text-slate-500">
             {intermediate.length === 0
-              ? 'Sin paradas intermedias'
-              : `${intermediate.length} parada${intermediate.length > 1 ? 's' : ''}: ${intermediate
-                  .map((s) => s.name)
-                  .join(', ')}`}
+              ? t('tripCard.noStops')
+              : t('tripCard.stops', { count: intermediate.length, list: intermediate.map((s) => s.name).join(', ') })}
           </p>
         </div>
 
-        <div className="flex flex-col items-end gap-2">
+        <div className="hidden w-px self-stretch bg-slate-100 sm:block" aria-hidden="true" />
+
+        <div className="ml-auto flex flex-col items-end gap-2">
           <span
-            className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+            className={`whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium ${
               enoughSeats ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'
             }`}
           >
-            {freeSeats} asientos libres
+            {t('tripCard.freeSeats', { count: freeSeats })}
           </span>
-          <span className="text-xs text-slate-400">Precio al confirmar</span>
           <button
             type="button"
             onClick={() => onBuy(trip)}
             disabled={!enoughSeats}
-            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-800 active:scale-[0.98] motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100"
           >
-            Comprar
+            {t('tripCard.buy')}
           </button>
+          <span className="text-2xl font-semibold text-slate-900">{formatPrice(trip.price, language)}</span>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setShowStops((v) => !v)}
+          aria-expanded={showStops}
+          aria-controls={stopsId}
+          className="basis-full border-t border-slate-100 pt-3 text-left text-sm font-medium text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline"
+        >
+          {showStops ? t('tripCard.hideStops') : t('tripCard.showStops')}
+        </button>
       </div>
 
-      <button
-        type="button"
-        onClick={() => setShowStops((v) => !v)}
-        className="mt-4 text-sm font-medium text-slate-600 underline-offset-2 hover:underline"
-      >
-        {showStops ? 'Ocultar recorrido' : 'Ver recorrido completo'}
-      </button>
-
       {showStops && (
-        <ol className="mt-3 space-y-2 border-t border-slate-100 pt-3">
+        <ol id={stopsId} className="mt-3 space-y-2 border-t border-slate-100 pt-3">
           {stops.map((stop) => {
             const isEdge = stop.name === origin.name || stop.name === destination.name
             return (
@@ -89,7 +98,7 @@ export default function TripCard({ trip, origin, destination, passengers, onBuy 
                   aria-hidden
                 />
                 <span className="w-14 tabular-nums text-slate-500">
-                  {formatTime(stop.estimatedTime)}
+                  {formatTime(stop.estimatedTime, language)}
                 </span>
                 <span className={isEdge ? 'font-medium text-slate-900' : 'text-slate-600'}>
                   {stop.name}

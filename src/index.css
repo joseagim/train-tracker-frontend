@@ -1,1 +1,31 @@
 @import "tailwindcss";
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
+@theme {
+  /* Azul de marca TrainTracker */
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #5b9bf0;
+  --color-brand-500: #3579db;
+  --color-brand-600: #2361c2;
+  --color-brand-700: #164ea3;
+  --color-brand-800: #123f82;
+  --color-brand-900: #102f5e;
+  --color-brand-950: #0a1d3a;
+}
