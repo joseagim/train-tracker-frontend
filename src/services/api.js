@@ -119,6 +119,21 @@ async function request(path, { method = 'GET', body, auth = false } = {}) {
   return data
 }
 
+// Comprobación ligera para ApiWakeGate: no pasa por `request()` porque
+// necesita su propio timeout corto (para detectar un servidor "dormido"
+// en vez de esperar indefinidamente) y no debe disparar el manejador de
+// sesión caducada ni lanzar ApiError.
+export async function ping(timeoutMs) {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const res = await fetch(`${BASE_URL}/api/stations?page=0&size=1`, { signal: controller.signal })
+    if (!res.ok) throw new Error(`ping failed with status ${res.status}`)
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 /* ---------- Endpoints ---------- */
 
 export function register({ firstName, lastName, email, phoneNumber, dni, password }) {

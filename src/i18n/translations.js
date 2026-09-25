@@ -142,6 +142,12 @@ export const translations = {
       sessionExpired: 'Sesión no válida o caducada. Vuelve a iniciar sesión.',
       genericError: 'Error {status}',
     },
+    apiWake: {
+      title: 'Despertando el servidor…',
+      message:
+        'La API está alojada en un plan gratuito y se apaga tras un rato de inactividad. Puede tardar hasta 3 minutos en arrancar — esta página se recargará sola en cuanto esté lista.',
+      elapsed: 'Esperando… {seconds}s',
+    },
   },
   en: {
     common: {
@@ -282,6 +288,12 @@ export const translations = {
       networkError: 'Could not connect to the server.',
       sessionExpired: 'Invalid or expired session. Please sign in again.',
       genericError: 'Error {status}',
+    },
+    apiWake: {
+      title: 'Waking up the server…',
+      message:
+        "The API runs on a free hosting plan and spins down after a period of inactivity. It can take up to 3 minutes to start — this page will reload automatically once it's ready.",
+      elapsed: 'Waiting… {seconds}s',
     },
   },
 }

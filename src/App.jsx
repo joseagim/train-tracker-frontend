@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import AdminRoute from './components/AdminRoute'
+import ApiWakeGate from './components/ApiWakeGate'
 import Footer from './components/Footer'
 import Navbar from './components/Navbar'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -37,24 +38,26 @@ export default function App() {
     <LanguageProvider>
       <AuthProvider>
         <Layout>
-          <Routes>
-            {/* Públicas */}
-            <Route path="/" element={<SearchPage />} />
-            <Route path="/login" element={<LoginPage />} />
+          <ApiWakeGate>
+            <Routes>
+              {/* Públicas */}
+              <Route path="/" element={<SearchPage />} />
+              <Route path="/login" element={<LoginPage />} />
 
-            {/* Requieren sesión */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/purchase" element={<PurchasePage />} />
-              <Route path="/my-tickets" element={<MyTicketsPage />} />
-            </Route>
+              {/* Requieren sesión */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/purchase" element={<PurchasePage />} />
+                <Route path="/my-tickets" element={<MyTicketsPage />} />
+              </Route>
 
-            {/* Solo admin */}
-            <Route element={<AdminRoute />}>
-              <Route path="/admin/validate-qr" element={<ValidateQrPage />} />
-            </Route>
+              {/* Solo admin */}
+              <Route element={<AdminRoute />}>
+                <Route path="/admin/validate-qr" element={<ValidateQrPage />} />
+              </Route>
 
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </ApiWakeGate>
         </Layout>
       </AuthProvider>
     </LanguageProvider>
