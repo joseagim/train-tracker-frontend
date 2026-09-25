@@ -9,6 +9,7 @@ export const translations = {
       train: 'Tren',
       price: 'Precio',
       requiredFields: 'Completa los campos obligatorios para continuar.',
+      close: 'Cerrar',
     },
     layout: {
       skipToContent: 'Saltar al contenido',
@@ -73,6 +74,7 @@ export const translations = {
       sortTime: 'Hora',
       sortPrice: 'Precio',
       noResults: 'No hay viajes disponibles para esos criterios.',
+      emptyState: 'Todavía no has buscado ningún viaje. Completa el formulario y pulsa "Buscar" para ver los trenes disponibles.',
       decrementPassenger: 'Restar pasajero',
       incrementPassenger: 'Sumar pasajero',
     },
@@ -156,6 +158,7 @@ export const translations = {
       train: 'Train',
       price: 'Price',
       requiredFields: 'Fill in the required fields to continue.',
+      close: 'Close',
     },
     layout: {
       skipToContent: 'Skip to content',
@@ -220,6 +223,7 @@ export const translations = {
       sortTime: 'Time',
       sortPrice: 'Price',
       noResults: 'No trips available for those criteria.',
+      emptyState: 'You haven\'t searched for a trip yet. Fill in the form and hit "Search" to see available trains.',
       decrementPassenger: 'Remove passenger',
       incrementPassenger: 'Add passenger',
     },

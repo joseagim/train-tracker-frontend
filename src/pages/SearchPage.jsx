@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import emptySearchIcon from '../assets/empty-search.webp'
 import Alert from '../components/Alert'
 import Spinner from '../components/Spinner'
 import TripCard from '../components/TripCard'
@@ -506,6 +507,13 @@ export default function SearchPage() {
       </section>
 
       {searching && <Spinner label={t('search.searchingTrips')} />}
+
+      {!searching && !results && (
+        <div className="flex flex-col items-center gap-4 py-10 text-center">
+          <img src={emptySearchIcon} alt="" className="h-32 w-auto opacity-90" />
+          <p className="max-w-sm text-sm text-slate-500">{t('search.emptyState')}</p>
+        </div>
+      )}
 
       {!searching && results && criteria && (
         <section className="space-y-4">
