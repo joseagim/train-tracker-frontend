@@ -1,8 +1,8 @@
-// Pon aquí las URLs de tus perfiles. Un campo vacío ('') hace que el Footer
-// muestre el icono como informativo (sin enlace); en cuanto rellenes la URL,
-// se convierte automáticamente en un enlace real que abre en una pestaña nueva.
+// Pon aquí las URLs de tus perfiles. `show: false` oculta el icono del
+// Footer por completo (útil mientras no tengas la URL todavía, como el
+// portfolio); en cuanto la tengas, rellena `url` y pon `show: true`.
 export const SOCIAL_LINKS = {
-  github: '',
-  linkedin: '',
-  portfolio: '',
+  github: { url: 'https://github.com/joseagim', show: true },
+  linkedin: { url: 'https://linkedin.com/in/joseagim', show: true },
+  portfolio: { url: '', show: false },
 }

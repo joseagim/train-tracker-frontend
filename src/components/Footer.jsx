@@ -30,13 +30,12 @@ function PortfolioIcon(props) {
   )
 }
 
-// Las URLs viven en `src/config/socialLinks.js`: mientras un campo esté
-// vacío, el icono se muestra como informativo (sin enlace).
+// Las URLs y la visibilidad de cada red viven en `src/config/socialLinks.js`.
 const SOCIAL_LINKS = [
-  { label: 'GitHub', Icon: GitHubIcon, url: SOCIAL_URLS.github },
-  { label: 'LinkedIn', Icon: LinkedInIcon, url: SOCIAL_URLS.linkedin },
-  { label: 'Portfolio', Icon: PortfolioIcon, url: SOCIAL_URLS.portfolio },
-]
+  { label: 'GitHub', Icon: GitHubIcon, ...SOCIAL_URLS.github },
+  { label: 'LinkedIn', Icon: LinkedInIcon, ...SOCIAL_URLS.linkedin },
+  { label: 'Portfolio', Icon: PortfolioIcon, ...SOCIAL_URLS.portfolio },
+].filter((link) => link.show)
 
 export default function Footer() {
   const { t } = useLanguage()
@@ -56,7 +55,14 @@ export default function Footer() {
               </>
             )
             return url ? (
-              <a key={label} href={url} target="_blank" rel="noopener noreferrer" title={label} className={className}>
+              <a
+                key={label}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={label}
+                className={`${className} cursor-pointer`}
+              >
                 {content}
               </a>
             ) : (

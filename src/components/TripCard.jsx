@@ -16,6 +16,7 @@ export default function TripCard({ trip, origin, destination, passengers, onBuy 
 
   const freeSeats = countFreeSeats(trip.seats)
   const enoughSeats = freeSeats >= passengers
+  const totalPrice = typeof trip.price === 'number' ? trip.price * passengers : trip.price
 
   // Paradas comprendidas entre el origen y el destino elegidos.
   const stops = trip.stations ?? []
@@ -73,7 +74,14 @@ export default function TripCard({ trip, origin, destination, passengers, onBuy 
           >
             {t('tripCard.buy')}
           </button>
-          <span className="text-2xl font-semibold text-slate-900">{formatPrice(trip.price, language)}</span>
+          <div className="flex flex-col items-end">
+            <span className="text-2xl font-semibold text-slate-900">{formatPrice(totalPrice, language)}</span>
+            {passengers > 1 && (
+              <span className="text-xs text-slate-400">
+                {t('purchase.perTicket', { price: formatPrice(trip.price, language) })}
+              </span>
+            )}
+          </div>
         </div>
 
         <button
