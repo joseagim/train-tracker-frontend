@@ -4,5 +4,5 @@
 export const SOCIAL_LINKS = {
   github: { url: 'https://github.com/joseagim', show: true },
   linkedin: { url: 'https://linkedin.com/in/joseagim', show: true },
-  portfolio: { url: '', show: false },
+  portfolio: { url: 'https://www.joseagim.dev', show: true },
 }
